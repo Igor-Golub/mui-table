@@ -6,6 +6,8 @@ export const tableManagerContext = createContext<TableContext>({
   total: 0,
   limit: 0,
   tableData: [],
+  selectedRows: [],
   handleChangePage: () => {},
   handleChangeRowsPerPage: () => {},
+  handleChangeSelectedRows: () => {},
 });
