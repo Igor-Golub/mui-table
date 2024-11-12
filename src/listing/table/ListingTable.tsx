@@ -30,6 +30,8 @@ export const ListingTable = <TableEntity extends BaseTableEntity>({
     const numberColumn: Column<TableEntity> = {
       header: "#",
       dataKey: "number",
+      bodyCellProps: { align: "center" },
+      headerCellProps: { align: "center" },
       renderCell: (entity, rowIndex) => (
         <NumberCell key={`number_${entity.id}`} entityRenderIndex={rowIndex} />
       ),
@@ -69,7 +71,7 @@ export const ListingTable = <TableEntity extends BaseTableEntity>({
 
         <TableBody columns={innerColumns} />
 
-        <TableFooter />
+        <TableFooter isSelected={!!onSelect} selectedRows={selectedRows} />
       </Table>
     </TableContainer>
   );

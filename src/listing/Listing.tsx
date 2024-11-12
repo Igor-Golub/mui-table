@@ -6,8 +6,8 @@ import { ListingFilters } from "./filters/ListingFilters";
 import { TableNameWithActions } from "./table/TableNameWithActions";
 import { TableConfigurationPanel } from "./configurationPanel/TableConfigurationPanel";
 import {
-  BaseTableEntity,
   Column,
+  BaseTableEntity,
   ColumnsConfiguration,
   FiltersConfiguration,
 } from "./types";
@@ -60,11 +60,7 @@ export const Listing = <
           <ListingFilters<TableEntity> configuration={filtersConfiguration} />
         )}
 
-        <TableConfigurationPanel<TableEntity>
-          columns={columns}
-          selectedRows={selectedRows}
-          columnsConfigurator={columnsConfigurator}
-        />
+        <TableConfigurationPanel<TableEntity> columns={columns} />
 
         <ListingTable<TableEntity>
           columns={columns}
