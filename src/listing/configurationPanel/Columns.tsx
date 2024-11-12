@@ -1,8 +1,7 @@
-import { useState, MouseEvent } from "react";
+import { MouseEvent, useState } from "react";
 import {
   Button,
   Checkbox,
-  Divider,
   FormControlLabel,
   Popover,
   Stack,
@@ -49,11 +48,7 @@ export const Columns = <TableEntity extends BaseTableEntity>({
           horizontal: "left",
         }}
       >
-        <Stack padding="1rem" gap="0.5rem">
-          <FormControlLabel control={<Checkbox />} label="Select all" />
-
-          <Divider flexItem />
-
+        <Stack padding="1rem" gap="0.5rem" minWidth="18rem">
           <Stack gap="0.5rem">
             {columns.map(({ header, dataKey }) => (
               <FormControlLabel

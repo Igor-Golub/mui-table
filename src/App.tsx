@@ -119,7 +119,9 @@ export function App() {
         canHideColumn: true,
       }}
       withNumber
-      onSelect={() => {}}
+      onSelect={(selectedRowId, selectedRows) => {
+        console.log(selectedRowId, selectedRows);
+      }}
       renderData={users}
       listingName="Listing"
       listingActions={<Button variant="contained">Some action</Button>}

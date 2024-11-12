@@ -29,6 +29,8 @@ export const TableManagerContextProvider = <
     total: tableData.length,
   });
 
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+
   const tableDataWithGroup = useMemo(() => {
     const filteredTableData = filtersConfiguration
       ? tableData.filter((entity) =>
@@ -103,11 +105,13 @@ export const TableManagerContextProvider = <
   const value = useMemo(
     () => ({
       ...pagination,
+      selectedRows,
       handleChangePage,
       handleChangeRowsPerPage,
       tableData: tableDataWithGroup,
+      handleChangeSelectedRows: setSelectedRows,
     }),
-    [pagination, tableDataWithGroup],
+    [pagination, tableDataWithGroup, selectedRows],
   );
 
   return (

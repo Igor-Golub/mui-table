@@ -1,27 +1,24 @@
-
-import { Dispatch, SetStateAction } from "react";
 import { Checkbox } from "@mui/material";
 import { BaseTableEntity } from "../../types.ts";
+import { useTableManagerContext } from "../../contexts";
 
 interface Props<TableEntity extends BaseTableEntity> {
   entity: TableEntity;
-  isSelected: boolean;
-  setSelectedRows: Dispatch<SetStateAction<string[]>>;
   onSelect?: (selectedRowId: string, selectedRows: string[]) => void;
 }
 
 export const Select = <TableEntity extends BaseTableEntity>({
   entity,
   onSelect,
-  isSelected,
-  setSelectedRows,
 }: Props<TableEntity>) => {
+  const { selectedRows, handleChangeSelectedRows } = useTableManagerContext();
+
   return (
     <Checkbox
-      checked={isSelected}
+      checked={selectedRows.includes(entity.id)}
       onChange={() => {
         if (onSelect) {
-          setSelectedRows((prev) => {
+          handleChangeSelectedRows((prev) => {
             const nextValue = prev.includes(entity.id)
               ? prev.filter((id) => id !== entity.id)
               : [...prev, entity.id];

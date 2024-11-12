@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import { Providers } from "./contexts";
 import { ListingTable } from "./table/ListingTable";
 import { ListingContainer } from "./ListingContainer";
@@ -42,8 +42,6 @@ export const Listing = <
 }: Props<Entity, TableEntity>) => {
   const tableData = renderData.map(tableDataAdapter);
 
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
-
   return (
     <Providers<TableEntity>
       groupBy={groupBy}
@@ -60,18 +58,12 @@ export const Listing = <
           <ListingFilters<TableEntity> configuration={filtersConfiguration} />
         )}
 
-        <TableConfigurationPanel<TableEntity>
-          columns={columns}
-          selectedRows={selectedRows}
-          columnsConfigurator={columnsConfigurator}
-        />
+        <TableConfigurationPanel<TableEntity> columns={columns} />
 
         <ListingTable<TableEntity>
           columns={columns}
           onSelect={onSelect}
           withNumber={withNumber}
-          selectedRows={selectedRows}
-          setSelectedRows={setSelectedRows}
           columnsConfigurator={columnsConfigurator}
         />
       </ListingContainer>
