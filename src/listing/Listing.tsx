@@ -6,10 +6,11 @@ import { ListingFilters } from "./filters/ListingFilters";
 import { TableNameWithActions } from "./table/TableNameWithActions";
 import { TableConfigurationPanel } from "./configurationPanel/TableConfigurationPanel";
 import {
-  BaseTableEntity,
   Column,
+  BaseTableEntity,
   ColumnsConfiguration,
   FiltersConfiguration,
+  VirtualizationConfiguration,
 } from "./types";
 
 interface Props<Entity, TableEntity extends BaseTableEntity> {
@@ -23,6 +24,7 @@ interface Props<Entity, TableEntity extends BaseTableEntity> {
   tableDataAdapter: (entity: Entity) => TableEntity;
   filtersConfiguration?: FiltersConfiguration<TableEntity>[];
   onSelect?: (selectedRowId: string, selectedRows: string[]) => void;
+  virtualizationConfiguration?: VirtualizationConfiguration;
 }
 
 export const Listing = <
@@ -39,6 +41,7 @@ export const Listing = <
   columnsConfigurator,
   withNumber = false,
   filtersConfiguration,
+  virtualizationConfiguration,
 }: Props<Entity, TableEntity>) => {
   const tableData = renderData.map(tableDataAdapter);
 
@@ -65,6 +68,7 @@ export const Listing = <
           onSelect={onSelect}
           withNumber={withNumber}
           columnsConfigurator={columnsConfigurator}
+          virtualizationConfiguration={virtualizationConfiguration}
         />
       </ListingContainer>
     </Providers>
