@@ -24,6 +24,8 @@ export const ListingTable = <TableEntity extends BaseTableEntity>({
   const { selectedRows } = useTableManagerContext();
   const { columnsValues } = useColumnsManagerContext<TableEntity>();
 
+  // TODO move columns integration to other place
+
   const innerColumns = useMemo(() => {
     const numberColumn: Column<TableEntity> = {
       header: "#",
