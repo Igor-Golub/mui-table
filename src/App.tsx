@@ -88,6 +88,11 @@ export function App() {
 
   return (
     <Listing<User, UserTableEntity>
+      virtualizationConfiguration={{
+        isVirtualized: true,
+        containerHeight: 600,
+        itemHeight: 75,
+      }}
       columns={columns}
       filtersConfiguration={[
         {

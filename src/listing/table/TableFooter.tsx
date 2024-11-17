@@ -1,9 +1,4 @@
-import {
-  TableCell,
-  TableFooter as MUITableFooter,
-  TableRow,
-  Typography,
-} from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { Pagination as PaginationComponent } from "./Pagination";
 
 interface Props {
@@ -13,18 +8,19 @@ interface Props {
 
 export const TableFooter = ({ isSelected, selectedRows }: Props) => {
   return (
-    <MUITableFooter>
-      <TableRow>
-        {isSelected && (
-          <TableCell>
-            <Typography component="span" variant="body2">
-              Selected: {selectedRows.length}
-            </Typography>
-          </TableCell>
-        )}
+    <Stack
+      direction="row"
+      padding="0 1rem"
+      alignItems="center"
+      justifyContent="space-between"
+    >
+      {isSelected && (
+        <Typography component="span" variant="body2">
+          Selected: {selectedRows.length}
+        </Typography>
+      )}
 
-        <PaginationComponent />
-      </TableRow>
-    </MUITableFooter>
+      <PaginationComponent />
+    </Stack>
   );
 };

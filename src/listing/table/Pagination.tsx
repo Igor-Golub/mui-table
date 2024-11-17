@@ -10,6 +10,7 @@ export const Pagination = () => {
     <TablePagination
       page={page}
       count={total}
+      component="div"
       rowsPerPage={limit}
       ActionsComponent={TablePaginationActions}
       rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}

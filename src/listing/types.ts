@@ -51,6 +51,13 @@ export type FiltersConfiguration<TableEntity extends BaseTableEntity> = {
   };
 }[InputTypes];
 
+export type VirtualizationConfiguration = {
+  itemHeight: number;
+  overScan?: number;
+  isVirtualized: boolean;
+  containerHeight: number;
+};
+
 export type FilterComponentsMapper = Record<
   InputTypes,
   (inputProps: any, filterValue: any) => any

@@ -3,15 +3,21 @@ import { Paper, Table, TableContainer } from "@mui/material";
 import { TableBody } from "./TableBody";
 import { TableHeader } from "./TableHeader";
 import { TableFooter } from "./TableFooter";
-import { BaseTableEntity, Column, ColumnsConfiguration } from "../types";
+import { useTableManagerContext } from "../contexts";
 import { NumberCell, SelectCell } from "./innerColumns";
 import { useColumnsManagerContext } from "../contexts/columnsManager";
-import { useTableManagerContext } from "../contexts";
+import {
+  BaseTableEntity,
+  Column,
+  ColumnsConfiguration,
+  VirtualizationConfiguration,
+} from "../types";
 
 interface Props<TableEntity extends BaseTableEntity> {
   withNumber?: boolean;
   columns: Column<TableEntity>[];
   columnsConfigurator?: ColumnsConfiguration;
+  virtualizationConfiguration?: VirtualizationConfiguration;
   onSelect?: (selectedRowId: string, selectedRows: string[]) => void;
 }
 
@@ -60,17 +66,19 @@ export const ListingTable = <TableEntity extends BaseTableEntity>({
   }, [onSelect, columns, withNumber, columnsValues]);
 
   return (
-    <TableContainer component={Paper}>
-      <Table stickyHeader>
-        <TableHeader
-          columns={innerColumns}
-          columnsConfigurator={columnsConfigurator}
-        />
+    <Paper sx={{ width: "100%", overflow: "hidden" }}>
+      <TableContainer style={{ maxHeight: "600px" }}>
+        <Table stickyHeader>
+          <TableHeader
+            columns={innerColumns}
+            columnsConfigurator={columnsConfigurator}
+          />
 
-        <TableBody columns={innerColumns} />
+          <TableBody columns={innerColumns} />
+        </Table>
+      </TableContainer>
 
-        <TableFooter isSelected={!!onSelect} selectedRows={selectedRows} />
-      </Table>
-    </TableContainer>
+      <TableFooter isSelected={!!onSelect} selectedRows={selectedRows} />
+    </Paper>
   );
 };
