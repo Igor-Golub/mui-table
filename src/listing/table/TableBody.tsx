@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useMemo } from "react";
 import { TableBody as MUITableBody, TableCell, TableRow } from "@mui/material";
 import { useTableManagerContext } from "../contexts";
 import { BaseTableEntity, Column } from "../types";
@@ -13,12 +13,17 @@ export const TableBody = <TableEntity extends BaseTableEntity>({
   const { page, limit } = useTableManagerContext();
   const { tableData } = useTableManagerContext<TableEntity>();
 
+  const tableDataWithPagination = useMemo(
+    () =>
+      limit > 0
+        ? tableData.slice(page * limit, page * limit + limit)
+        : tableData,
+    [limit, page, tableData],
+  );
+
   return (
     <MUITableBody>
-      {(limit > 0
-        ? tableData.slice(page * limit, page * limit + limit)
-        : tableData
-      ).map((row, rowIndex) => (
+      {tableDataWithPagination.map((row, rowIndex) => (
         <Fragment key={row.id}>
           <TableRow>
             {columns.map(({ dataKey, renderCell, bodyCellProps = {} }) => (
