@@ -9,6 +9,7 @@ import {
 export interface BaseTableEntity
   extends Record<string, string | number | boolean | undefined> {
   id: string;
+  renderIndex: number;
 }
 
 export interface Column<TableEntity extends BaseTableEntity> {
@@ -50,13 +51,6 @@ export type FiltersConfiguration<TableEntity extends BaseTableEntity> = {
     inputProps: InputPropsByType[K];
   };
 }[InputTypes];
-
-export type VirtualizationConfiguration = {
-  itemHeight: number;
-  overScan?: number;
-  isVirtualized: boolean;
-  containerHeight: number;
-};
 
 export type FilterComponentsMapper = Record<
   InputTypes,

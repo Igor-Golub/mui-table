@@ -10,7 +10,6 @@ import {
   BaseTableEntity,
   ColumnsConfiguration,
   FiltersConfiguration,
-  VirtualizationConfiguration,
 } from "./types";
 
 interface Props<Entity, TableEntity extends BaseTableEntity> {
@@ -20,11 +19,11 @@ interface Props<Entity, TableEntity extends BaseTableEntity> {
   listingActions?: ReactNode;
   groupBy?: keyof TableEntity;
   columns: Column<TableEntity>[];
+  onRowClick?: (row: TableEntity) => void;
   columnsConfigurator?: ColumnsConfiguration;
-  tableDataAdapter: (entity: Entity) => TableEntity;
   filtersConfiguration?: FiltersConfiguration<TableEntity>[];
+  tableDataAdapter: (entity: Entity, index: number) => TableEntity;
   onSelect?: (selectedRowId: string, selectedRows: string[]) => void;
-  virtualizationConfiguration?: VirtualizationConfiguration;
 }
 
 export const Listing = <
@@ -35,13 +34,13 @@ export const Listing = <
   groupBy,
   onSelect,
   renderData,
+  onRowClick,
   listingName,
   listingActions,
   tableDataAdapter,
   columnsConfigurator,
   withNumber = false,
   filtersConfiguration,
-  virtualizationConfiguration,
 }: Props<Entity, TableEntity>) => {
   const tableData = renderData.map(tableDataAdapter);
 
@@ -68,9 +67,9 @@ export const Listing = <
         <ListingTable<TableEntity>
           columns={columns}
           onSelect={onSelect}
+          onRowClick={onRowClick}
           withNumber={withNumber}
           columnsConfigurator={columnsConfigurator}
-          virtualizationConfiguration={virtualizationConfiguration}
         />
       </ListingContainer>
     </Providers>
