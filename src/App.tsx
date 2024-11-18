@@ -77,22 +77,21 @@ export function App() {
     },
   ];
 
-  const userTableDataAdapter = (user: User): UserTableEntity => ({
+  const userTableDataAdapter = (
+    user: User,
+    index: number,
+  ): UserTableEntity => ({
     id: user.id,
     age: user.age,
     email: user.email,
+    renderIndex: index,
+    isAdmin: user.isAdmin,
     lastName: user.lastName,
     firstName: user.firstName,
-    isAdmin: user.isAdmin,
   });
 
   return (
     <Listing<User, UserTableEntity>
-      virtualizationConfiguration={{
-        isVirtualized: true,
-        containerHeight: 600,
-        itemHeight: 75,
-      }}
       columns={columns}
       filtersConfiguration={[
         {
@@ -122,6 +121,9 @@ export function App() {
       ]}
       columnsConfigurator={{
         canHideColumn: true,
+      }}
+      onRowClick={(row) => {
+        console.log(row);
       }}
       withNumber
       onSelect={(selectedRowId, selectedRows) => {

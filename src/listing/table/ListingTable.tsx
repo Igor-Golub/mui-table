@@ -6,18 +6,13 @@ import { TableFooter } from "./TableFooter";
 import { useTableManagerContext } from "../contexts";
 import { NumberCell, SelectCell } from "./innerColumns";
 import { useColumnsManagerContext } from "../contexts/columnsManager";
-import {
-  BaseTableEntity,
-  Column,
-  ColumnsConfiguration,
-  VirtualizationConfiguration,
-} from "../types";
+import { BaseTableEntity, Column, ColumnsConfiguration } from "../types";
 
 interface Props<TableEntity extends BaseTableEntity> {
   withNumber?: boolean;
   columns: Column<TableEntity>[];
+  onRowClick?: (row: TableEntity) => void;
   columnsConfigurator?: ColumnsConfiguration;
-  virtualizationConfiguration?: VirtualizationConfiguration;
   onSelect?: (selectedRowId: string, selectedRows: string[]) => void;
 }
 
@@ -25,6 +20,7 @@ export const ListingTable = <TableEntity extends BaseTableEntity>({
   columns,
   onSelect,
   withNumber,
+  onRowClick,
   columnsConfigurator,
 }: Props<TableEntity>) => {
   const { selectedRows } = useTableManagerContext();
@@ -38,8 +34,11 @@ export const ListingTable = <TableEntity extends BaseTableEntity>({
       dataKey: "number",
       bodyCellProps: { align: "center" },
       headerCellProps: { align: "center" },
-      renderCell: (entity, rowIndex) => (
-        <NumberCell key={`number_${entity.id}`} entityRenderIndex={rowIndex} />
+      renderCell: (entity) => (
+        <NumberCell
+          key={`number_${entity.id}`}
+          entityRenderIndex={entity.renderIndex}
+        />
       ),
     };
 
@@ -67,14 +66,14 @@ export const ListingTable = <TableEntity extends BaseTableEntity>({
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer style={{ maxHeight: "600px" }}>
+      <TableContainer style={{ height: "600px" }}>
         <Table stickyHeader>
           <TableHeader
             columns={innerColumns}
             columnsConfigurator={columnsConfigurator}
           />
 
-          <TableBody columns={innerColumns} />
+          <TableBody columns={innerColumns} onRowClick={onRowClick} />
         </Table>
       </TableContainer>
 
