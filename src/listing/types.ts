@@ -33,7 +33,7 @@ export enum InputTypes {
   Checkbox = "checkbox",
 }
 
-type InputPropsByType = {
+export type InputPropsByType = {
   [InputTypes.Text]: Omit<TextFieldProps, "value" | "onChange">;
   [InputTypes.Select]: Omit<SelectProps, "value" | "onChange"> & {
     options: { label: string; value: string }[];
@@ -44,18 +44,20 @@ type InputPropsByType = {
 };
 
 export type FiltersConfiguration<TableEntity extends BaseTableEntity> = {
-  [K in InputTypes]: {
-    inputType: K;
+  [Key in InputTypes]: {
+    inputType: Key;
     filterValue: string;
     fields: (keyof TableEntity)[];
-    inputProps: InputPropsByType[K];
+    inputProps: InputPropsByType[Key];
   };
 }[InputTypes];
 
-export type FilterComponentsMapper = Record<
-  InputTypes,
-  (inputProps: any, filterValue: any) => any
->;
+export type FilterComponentsMapper = {
+  [Key in InputTypes]: (
+    inputProps: InputPropsByType[Key],
+    filterValue: string,
+  ) => ReactNode;
+};
 
 export type ColumnsConfiguration = {
   canHideColumn: boolean;

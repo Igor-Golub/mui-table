@@ -26,7 +26,7 @@ export const ListingFilters = <TableEntity extends BaseTableEntity>({
 }: Props<TableEntity>) => {
   const { filtersValues, handleChangeFilters } = useFiltersManagerContext();
 
-  const renderComponents: FilterComponentsMapper = useMemo(
+  const renderComponents = useMemo<FilterComponentsMapper>(
     () => ({
       [InputTypes.Text]: (inputProps, filterValue) => (
         <TextField
@@ -41,14 +41,14 @@ export const ListingFilters = <TableEntity extends BaseTableEntity>({
         />
       ),
       [InputTypes.Select]: (inputProps, filterValue) => (
-        <Select<string>
+        <Select
           fullWidth
           size="small"
           displayEmpty
           labelId="selectFilter"
           value={filtersValues[filterValue] ?? ""}
           onChange={(event) => {
-            handleChangeFilters(filterValue, event.target.value);
+            handleChangeFilters(filterValue, event.target.value as string);
           }}
           {...inputProps}
         >
@@ -56,7 +56,7 @@ export const ListingFilters = <TableEntity extends BaseTableEntity>({
             <em>Not selected</em>
           </MenuItem>
 
-          {inputProps.options.map(({ label, value }: any) => (
+          {inputProps.options.map(({ label, value }) => (
             <MenuItem key={label} value={value}>
               {label}
             </MenuItem>
@@ -69,7 +69,7 @@ export const ListingFilters = <TableEntity extends BaseTableEntity>({
           control={
             <Checkbox
               size="small"
-              checked={filtersValues[filterValue] ?? false}
+              checked={!!filtersValues[filterValue]}
               onChange={(_, checked) => {
                 handleChangeFilters(filterValue, checked);
               }}
@@ -79,7 +79,7 @@ export const ListingFilters = <TableEntity extends BaseTableEntity>({
         />
       ),
     }),
-    [filtersValues],
+    [filtersValues, handleChangeFilters],
   );
 
   return (
@@ -91,7 +91,7 @@ export const ListingFilters = <TableEntity extends BaseTableEntity>({
       <Stack direction="row" gap="1rem">
         {configuration.map(({ inputType, filterValue, inputProps }) => (
           <Box key={filterValue} sx={{ flex: 1 }}>
-            {renderComponents[inputType](inputProps, filterValue)}
+            {renderComponents[inputType](inputProps as any, filterValue)}
           </Box>
         ))}
       </Stack>
