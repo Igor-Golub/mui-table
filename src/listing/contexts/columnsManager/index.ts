@@ -1,2 +1,2 @@
-export { ColumnsManagerContextProvider } from "./ColumnsManagerContext";
+export { ColumnsManagerContextProvider } from "./ColumnsManagerContext.tsx";
 export { useColumnsManagerContext } from "./useColumnsManagerContext";

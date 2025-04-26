@@ -2,6 +2,7 @@ import { Listing } from "./listing/Listing.tsx";
 import { Column, InputTypes } from "./listing/types.ts";
 import { User, users, UserTableEntity } from "./listing/mocks.ts";
 import { Button, Stack, Typography } from "@mui/material";
+import { UIFilters } from "./filters/ui/Filters.tsx";
 
 export function App() {
   const columns: Column<UserTableEntity>[] = [
@@ -91,49 +92,52 @@ export function App() {
   });
 
   return (
-    <Listing<User, UserTableEntity>
-      columns={columns}
-      filtersConfiguration={[
-        {
-          filterValue: "search",
-          fields: ["email", "age"],
-          inputType: InputTypes.Text,
-          inputProps: {
-            label: "Search by email & age",
+    <>
+      <UIFilters />
+      <Listing<User, UserTableEntity>
+        columns={columns}
+        filtersConfiguration={[
+          {
+            filterValue: "search",
+            fields: ["email", "age"],
+            inputType: InputTypes.Text,
+            inputProps: {
+              label: "Search by email & age",
+            },
           },
-        },
-        {
-          fields: ["age"],
-          filterValue: "selectAge",
-          inputType: InputTypes.Select,
-          inputProps: {
-            options: [{ label: "24", value: "24" }],
+          {
+            fields: ["age"],
+            filterValue: "selectAge",
+            inputType: InputTypes.Select,
+            inputProps: {
+              options: [{ label: "24", value: "24" }],
+            },
           },
-        },
-        {
-          fields: ["isAdmin"],
-          filterValue: "isAdmin",
-          inputType: InputTypes.Checkbox,
-          inputProps: {
-            label: "Is admin",
+          {
+            fields: ["isAdmin"],
+            filterValue: "isAdmin",
+            inputType: InputTypes.Checkbox,
+            inputProps: {
+              label: "Is admin",
+            },
           },
-        },
-      ]}
-      columnsConfigurator={{
-        canHideColumn: true,
-      }}
-      onRowClick={(row) => {
-        console.log(row);
-      }}
-      withNumber
-      onSelect={(selectedRowId, selectedRows) => {
-        console.log(selectedRowId, selectedRows);
-      }}
-      renderData={users}
-      listingName="Listing"
-      listingActions={<Button variant="contained">Some action</Button>}
-      groupBy="age"
-      tableDataAdapter={userTableDataAdapter}
-    />
+        ]}
+        columnsConfigurator={{
+          canHideColumn: true,
+        }}
+        onRowClick={(row) => {
+          console.log(row);
+        }}
+        withNumber
+        onSelect={(selectedRowId, selectedRows) => {
+          console.log(selectedRowId, selectedRows);
+        }}
+        renderData={users}
+        listingName="Listing"
+        listingActions={<Button variant="contained">Some action</Button>}
+        groupBy="age"
+        tableDataAdapter={userTableDataAdapter}
+      />
+    </>
   );
 }
