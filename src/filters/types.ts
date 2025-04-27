@@ -1,5 +1,6 @@
-export interface FilterMetaData extends Record<string, unknown> {
-  group: string;
+export interface FilterMetaData<Group extends string = string>
+  extends Record<string, unknown> {
+  group: Group;
   renderComponentType: string;
 }
 
@@ -28,14 +29,9 @@ export interface Filter<T extends FilterType = FilterType>
   type: T;
 }
 
-export interface FilterDeps {
-  action: (currentFilters: Filters, actions: Actions) => void;
-}
-
 export interface FilterValue<T extends FilterType = FilterType> {
   key?: string;
   options?: string[];
-  deps?: FilterDeps[];
   conditions?: string[];
   value: FilterValueMap[T] | null;
   metaData?: FilterMetaData;
@@ -47,9 +43,11 @@ export type Filters = Record<FilterId, Filter>;
 
 export interface FilterSync {
   storage: boolean;
+  url: boolean;
 }
 
 export interface IFilterSync {
   write: (value: Filters) => void;
+  delete: <T extends FilterType = FilterType>(type: T, id: FilterId) => void;
   read: () => Filters;
 }

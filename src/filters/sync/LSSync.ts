@@ -1,4 +1,4 @@
-import { Filters, IFilterSync } from "../types.ts";
+import { FilterId, Filters, IFilterSync } from "../types.ts";
 
 export class LSSync implements IFilterSync {
   constructor(
@@ -13,6 +13,17 @@ export class LSSync implements IFilterSync {
   }
 
   public read() {
+    return this.getFromLS();
+  }
+
+  public delete(id: FilterId) {
+    const filters = this.getFromLS();
+    const copy = { ...filters };
+    delete copy[id];
+    this.write(copy);
+  }
+
+  private getFromLS() {
     const lsFilters = localStorage.getItem(this.key);
 
     if (!lsFilters) throw new Error("Filters not found");

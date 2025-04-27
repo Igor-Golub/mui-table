@@ -9,7 +9,9 @@ import {
   FilterValue,
 } from "./types.ts";
 import { LSSync } from "./sync/LSSync.ts";
+import { URLSync } from "./sync/URLSync.ts";
 import { Logger } from "./logger.ts";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface FiltersOptions {
   logger: boolean;
@@ -20,29 +22,18 @@ export function useCoreFilters(options: Partial<FiltersOptions> = {}) {
   const logger = useRef<Logger>(new Logger());
   const lsSync = useRef<LSSync>(new LSSync());
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const urlSync = useRef<URLSync>(new URLSync(navigate, location));
+
   const settings = useRef<FiltersOptions>({
-    sync: { storage: !!options.sync?.storage },
+    sync: { storage: !!options.sync?.storage, url: !!options.sync?.url },
     logger: options.logger ?? false,
   });
 
-  const [filters, setFilters] = useState<Filters>({});
-
-  const findFilterByKey = useCallback(
-    (key: string): { id: FilterId; filter: Filter } | null => {
-      const result = Object.entries(filters).find(
-        ([_, filter]) => filter?.key === key,
-      );
-
-      if (!result) return null;
-
-      const [targetId, targetFilter] = result;
-
-      return {
-        id: targetId,
-        filter: targetFilter,
-      };
-    },
-    [filters],
+  const [filters, setFilters] = useState<Filters>(
+    settings.current.sync.url ? urlSync.current.read() : {},
   );
 
   const onUpdateFilter = useCallback(
@@ -51,16 +42,10 @@ export function useCoreFilters(options: Partial<FiltersOptions> = {}) {
       updateDTO: Pick<FilterValue<Type>, "value" | "conditions">,
     ) => {
       setFilters((prev) => {
-        const filterDeps = prev[id]?.deps ?? [];
-
         const nextFilters = {
           ...prev,
           [id]: { ...prev[id], ...updateDTO },
         };
-
-        filterDeps.forEach(({ action }) => {
-          action(nextFilters, { findFilterByKey });
-        });
 
         if (settings.current.logger) {
           logger.current.log("onUpdateFilter action", nextFilters);
@@ -69,7 +54,7 @@ export function useCoreFilters(options: Partial<FiltersOptions> = {}) {
         return nextFilters;
       });
     },
-    [findFilterByKey],
+    [],
   );
 
   const onAddFilter = useCallback(
@@ -83,6 +68,7 @@ export function useCoreFilters(options: Partial<FiltersOptions> = {}) {
         };
 
         if (settings.current.sync.storage) lsSync.current.write(newFilters);
+        if (settings.current.sync.url) urlSync.current.write(newFilters);
 
         if (settings.current.logger) {
           logger.current.log("onAddFilter action", newFilters);
@@ -90,22 +76,16 @@ export function useCoreFilters(options: Partial<FiltersOptions> = {}) {
 
         return newFilters;
       });
-
-      filter?.deps?.forEach(({ action }) => {
-        action(filters, { findFilterByKey });
-
-        if (settings.current.logger) {
-          logger.current.log("onAddFilter deps call");
-        }
-      });
     },
-    [filters, findFilterByKey],
+    [],
   );
 
   const onDeleteFilter = useCallback((filterId: FilterId) => {
     setFilters((prev) => {
       const current = { ...prev };
       delete current[filterId];
+
+      if (settings.current.sync.storage) lsSync.current.delete(filterId);
 
       if (settings.current.logger) {
         logger.current.log("onDeleteFilter action", current);
@@ -119,6 +99,7 @@ export function useCoreFilters(options: Partial<FiltersOptions> = {}) {
     setFilters({});
 
     if (settings.current.sync.storage) lsSync.current.write({});
+    if (settings.current.sync.url) urlSync.current.clear();
 
     if (settings.current.logger) {
       logger.current.log("onClearFilters action");

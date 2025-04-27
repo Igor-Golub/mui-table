@@ -3,13 +3,8 @@ import { FilterType } from "../types.ts";
 import { Button, Stack } from "@mui/material";
 
 export const UIFilters = () => {
-  const {
-    filters,
-    onAddFilter,
-    onClearFilters,
-    onDeleteFilter,
-    onUpdateFilter,
-  } = useCoreFilters({ sync: { storage: true }, logger: true });
+  const { filters, onAddFilter, onClearFilters, onDeleteFilter } =
+    useCoreFilters({ sync: { storage: true, url: true }, logger: true });
 
   return (
     <div>
@@ -33,18 +28,6 @@ export const UIFilters = () => {
               key: "A",
               type: FilterType.Boolean,
               value: true,
-              deps: [
-                {
-                  action: (_, { findFilterByKey }) => {
-                    const qualityFilter = findFilterByKey("quality");
-                    if (qualityFilter) {
-                      onUpdateFilter<FilterType.String>(qualityFilter.id, {
-                        value: "Used",
-                      });
-                    }
-                  },
-                },
-              ],
             });
           }}
         >
