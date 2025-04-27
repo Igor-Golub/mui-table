@@ -1,6 +1,8 @@
 export interface FilterMetaData<Group extends string = string>
   extends Record<string, unknown> {
   group: Group;
+  label: string;
+  groupLabel: string;
   renderComponentType: string;
 }
 
@@ -24,17 +26,19 @@ export type FilterValueMap = {
   [FilterType.Range]: [string, string];
 };
 
+export type FilterValueUnion = FilterValueMap[keyof FilterValueMap];
+
 export interface Filter<T extends FilterType = FilterType>
   extends FilterValue<T> {
   type: T;
 }
 
 export interface FilterValue<T extends FilterType = FilterType> {
-  key?: string;
+  key: string;
   options?: string[];
   conditions?: string[];
   value: FilterValueMap[T] | null;
-  metaData?: FilterMetaData;
+  metaData?: Partial<FilterMetaData>;
 }
 
 export type FilterId = string;
@@ -48,6 +52,6 @@ export interface FilterSync {
 
 export interface IFilterSync {
   write: (value: Filters) => void;
-  delete: <T extends FilterType = FilterType>(type: T, id: FilterId) => void;
+  delete: (id: FilterId, filter: Filter) => void;
   read: () => Filters;
 }

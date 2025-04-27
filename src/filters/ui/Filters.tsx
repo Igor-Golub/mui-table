@@ -25,7 +25,7 @@ export const UIFilters = () => {
           variant="contained"
           onClick={() => {
             onAddFilter({
-              key: "A",
+              key: "isNewOnly",
               type: FilterType.Boolean,
               value: true,
             });

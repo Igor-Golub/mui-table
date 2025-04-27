@@ -1,4 +1,10 @@
-import { Filters, IFilterSync, FilterType } from "../types";
+import {
+  Filters,
+  IFilterSync,
+  FilterType,
+  Filter,
+  FilterValueUnion,
+} from "../types";
 import { Location, useNavigate } from "react-router-dom";
 
 const serializeMappers: Record<FilterType, (value: any) => string> = {
@@ -22,7 +28,7 @@ const deserializeMappers = {
 };
 
 export class URLSync implements IFilterSync {
-  private readonly prefix = "f_" as const;
+  private readonly prefix = "f" as const;
 
   private readonly separator = "_" as const;
 
@@ -33,13 +39,16 @@ export class URLSync implements IFilterSync {
 
   private serializeFilter<T extends FilterType>(
     type: T,
-    value: string | number | boolean | [string, string] | string[],
+    value: FilterValueUnion,
   ): string {
     if (value === null) return "";
     return serializeMappers[type](value);
   }
 
-  private deserializeFilter<T extends FilterType>(type: T, value: string): any {
+  private deserializeFilter<T extends FilterType>(
+    type: T,
+    value: string,
+  ): FilterValueUnion | null {
     if (!value) return null;
 
     try {
@@ -49,8 +58,12 @@ export class URLSync implements IFilterSync {
     }
   }
 
-  private generateURLKey(type: FilterType, id: string): string {
-    return `${this.prefix}${id}_${type}`;
+  private generateURLKey(key: string, type: FilterType, id: string): string {
+    return `${this.prefix}_${id}_${key}_${type}`;
+  }
+
+  private updateURL(search: string) {
+    this.navigate({ search }, { replace: true });
   }
 
   public write(filters: Filters): void {
@@ -63,14 +76,13 @@ export class URLSync implements IFilterSync {
     Object.entries(filters).forEach(([id, filter]) => {
       if (filter.value === null) return;
 
-      const paramName = this.generateURLKey(filter.type, id);
-
+      const paramName = this.generateURLKey(filter.key, filter.type, id);
       const serialized = this.serializeFilter(filter.type, filter.value);
 
       if (serialized) params.set(paramName, serialized);
     });
 
-    this.navigate({ search: params.toString() }, { replace: true });
+    this.updateURL(params.toString());
   }
 
   public read(): Filters {
@@ -81,7 +93,7 @@ export class URLSync implements IFilterSync {
     Array.from(params.keys())
       .filter((key) => key.startsWith(this.prefix))
       .forEach((key) => {
-        const [_, filterId, filterType] = key.split(this.separator);
+        const [_, filterId, filterKey, filterType] = key.split(this.separator);
 
         const type = filterType as FilterType;
 
@@ -90,22 +102,22 @@ export class URLSync implements IFilterSync {
         if (type && valueStr !== null) {
           result[filterId] = {
             type,
+            key: filterKey,
             value: this.deserializeFilter(type, valueStr),
-            key: filterType,
-          };
+          } satisfies Filter;
         }
       });
 
     return result;
   }
 
-  public delete(type: FilterType, id: string): void {
+  public delete(id: string, filter: Filter): void {
     const params = new URLSearchParams(this.location.search);
-    const paramName = this.generateURLKey(type, id);
+    const paramName = this.generateURLKey(filter.key, filter.type, id);
 
     params.delete(paramName);
 
-    this.navigate({ search: params.toString() }, { replace: true });
+    this.updateURL(params.toString());
   }
 
   public clear(): void {
@@ -115,6 +127,6 @@ export class URLSync implements IFilterSync {
       .filter((key) => key.startsWith(this.prefix))
       .forEach((key) => params.delete(key));
 
-    this.navigate({ search: params.toString() }, { replace: true });
+    this.updateURL(params.toString());
   }
 }
