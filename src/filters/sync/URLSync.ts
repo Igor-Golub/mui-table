@@ -27,7 +27,7 @@ const deserializeMappers = {
     value.split("-").map((v) => decodeURIComponent(v)) as [string, string],
 };
 
-export class URLSync implements IFilterSync {
+export class URLSync<Key extends string = string> implements IFilterSync<Key> {
   private readonly prefix = "f" as const;
 
   private readonly separator = "_" as const;
@@ -85,33 +85,36 @@ export class URLSync implements IFilterSync {
     this.updateURL(params.toString());
   }
 
-  public read(): Filters {
+  public read(): Filters<Key> {
     const params = new URLSearchParams(this.location.search);
 
-    const result: Filters = {};
+    const result: Filters<Key> = {};
 
     Array.from(params.keys())
       .filter((key) => key.startsWith(this.prefix))
-      .forEach((key) => {
-        const [_, filterId, filterKey, filterType] = key.split(this.separator);
+      .forEach((param) => {
+        const [_, filterId, filterKey, filterType] = param.split(
+          this.separator,
+        );
 
         const type = filterType as FilterType;
+        const key = filterKey as Key;
 
-        const valueStr = params.get(key);
+        const valueStr = params.get(param);
 
         if (type && valueStr !== null) {
           result[filterId] = {
             type,
-            key: filterKey,
+            key,
             value: this.deserializeFilter(type, valueStr),
-          } satisfies Filter;
+          } satisfies Filter<FilterType, Key>;
         }
       });
 
     return result;
   }
 
-  public delete(id: string, filter: Filter): void {
+  public delete(id: string, filter: Filter<FilterType, Key>): void {
     const params = new URLSearchParams(this.location.search);
     const paramName = this.generateURLKey(filter.key, filter.type, id);
 

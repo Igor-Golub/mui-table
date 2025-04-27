@@ -13,29 +13,36 @@ import { URLSync } from "./sync/URLSync.ts";
 import { Logger } from "./logger.ts";
 import { useLocation, useNavigate } from "react-router-dom";
 
-interface FiltersOptions {
-  initial?: Filters;
+interface FiltersOptions<Key extends string = string> {
+  initial?: Filters<Key>;
   logger: boolean;
   sync: FilterSync;
 }
 
-export function useCoreFilters(options: Partial<FiltersOptions> = {}) {
+export function useCoreFilters<Key extends string = string>(
+  options: Partial<FiltersOptions<Key>> = {},
+) {
   const logger = useRef<Logger>(new Logger());
-  const lsSync = useRef<LSSync>(new LSSync());
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  const urlSync = useRef<URLSync>(new URLSync(navigate, location));
+  const urlSync = useRef<URLSync<Key>>(new URLSync(navigate, location));
+  const lsSync = useRef<LSSync<Key>>(new LSSync());
 
-  const settings = useRef<FiltersOptions>({
+  const settings = useRef<FiltersOptions<Key>>({
     sync: { storage: !!options.sync?.storage, url: !!options.sync?.url },
     logger: options.logger ?? false,
   });
 
-  const [filters, setFilters] = useState<Filters>(
-    settings.current.sync.url ? urlSync.current.read() : options.initial || {},
-  );
+  const [filters, setFilters] = useState<Filters<Key>>(() => {
+    const initialState = settings.current.sync.url
+      ? urlSync.current.read()
+      : options.initial || {};
+
+    lsSync.current.write(initialState);
+    return initialState;
+  });
 
   const onUpdateFilter = useCallback(
     <Type extends FilterType>(
@@ -43,7 +50,7 @@ export function useCoreFilters(options: Partial<FiltersOptions> = {}) {
       updateDTO: Pick<FilterValue<Type>, "value" | "conditions">,
     ) => {
       setFilters((prev) => {
-        const nextFilters = {
+        const nextFilters: Filters<Key> = {
           ...prev,
           [id]: { ...prev[id], ...updateDTO },
         };
@@ -59,11 +66,11 @@ export function useCoreFilters(options: Partial<FiltersOptions> = {}) {
   );
 
   const onAddFilter = useCallback(
-    <Type extends FilterType>(filter: Filter<Type>) => {
+    <Type extends FilterType>(filter: Filter<Type, Key>) => {
       setFilters((prev) => {
         const newFilterId = v4();
 
-        const newFilters = {
+        const newFilters: Filters<Key> = {
           ...prev,
           [newFilterId]: { ...filter, value: filter?.value ?? null },
         };
@@ -83,7 +90,7 @@ export function useCoreFilters(options: Partial<FiltersOptions> = {}) {
 
   const onDeleteFilter = useCallback((filterId: FilterId) => {
     setFilters((prev) => {
-      const current = { ...prev };
+      const current: Filters<Key> = { ...prev };
 
       const targetFilter = current[filterId];
 

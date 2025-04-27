@@ -1,12 +1,7 @@
 import { FilterId, Filters, IFilterSync } from "../types.ts";
 
-export class LSSync implements IFilterSync {
-  constructor(
-    private readonly key: string = "filters",
-    private readonly initialValue: Filters = {},
-  ) {
-    localStorage.setItem(this.key, JSON.stringify(this.initialValue));
-  }
+export class LSSync<Key extends string = string> implements IFilterSync<Key> {
+  constructor(private readonly key: string = "filters") {}
 
   public write(value: Filters) {
     localStorage.setItem(this.key, JSON.stringify(value));
@@ -32,6 +27,6 @@ export class LSSync implements IFilterSync {
 
     if (!lsFilters) throw new Error("Filters not found");
 
-    return JSON.parse(lsFilters) as Filters;
+    return JSON.parse(lsFilters) as Filters<Key>;
   }
 }
