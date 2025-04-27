@@ -14,10 +14,13 @@ export const ColumnsManagerContextProvider = <
 
   const handleChangeColumns = useCallback(
     (field: keyof TableEntity | string) => {
-      setColumnsValues((prev) => ({
-        ...prev,
-        [field]: !prev?.[field],
-      }));
+      setColumnsValues((prev) => {
+        if (field in prev) {
+          return { ...prev, [field]: !prev[field] };
+        }
+
+        return { ...prev, [field]: false };
+      });
     },
     [],
   );
