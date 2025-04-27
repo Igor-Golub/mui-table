@@ -14,6 +14,7 @@ import { Logger } from "./logger.ts";
 import { useLocation, useNavigate } from "react-router-dom";
 
 interface FiltersOptions {
+  initial?: Filters;
   logger: boolean;
   sync: FilterSync;
 }
@@ -33,7 +34,7 @@ export function useCoreFilters(options: Partial<FiltersOptions> = {}) {
   });
 
   const [filters, setFilters] = useState<Filters>(
-    settings.current.sync.url ? urlSync.current.read() : {},
+    settings.current.sync.url ? urlSync.current.read() : options.initial || {},
   );
 
   const onUpdateFilter = useCallback(
@@ -83,7 +84,14 @@ export function useCoreFilters(options: Partial<FiltersOptions> = {}) {
   const onDeleteFilter = useCallback((filterId: FilterId) => {
     setFilters((prev) => {
       const current = { ...prev };
+
+      const targetFilter = current[filterId];
+
       delete current[filterId];
+
+      if (settings.current.sync.url) {
+        urlSync.current.delete(filterId, targetFilter);
+      }
 
       if (settings.current.sync.storage) lsSync.current.delete(filterId);
 
@@ -98,7 +106,7 @@ export function useCoreFilters(options: Partial<FiltersOptions> = {}) {
   const onClearFilters = useCallback(() => {
     setFilters({});
 
-    if (settings.current.sync.storage) lsSync.current.write({});
+    if (settings.current.sync.storage) lsSync.current.clear();
     if (settings.current.sync.url) urlSync.current.clear();
 
     if (settings.current.logger) {

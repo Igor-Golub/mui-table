@@ -23,6 +23,10 @@ export class LSSync implements IFilterSync {
     this.write(copy);
   }
 
+  public clear() {
+    this.write({});
+  }
+
   private getFromLS() {
     const lsFilters = localStorage.getItem(this.key);
 

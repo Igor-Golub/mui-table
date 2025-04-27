@@ -54,4 +54,5 @@ export interface IFilterSync {
   write: (value: Filters) => void;
   delete: (id: FilterId, filter: Filter) => void;
   read: () => Filters;
+  clear: () => void;
 }
